@@ -1,0 +1,10 @@
+{
+  "name": "JMA Finance",
+  "short_name": "JMA Finance",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#020b16",
+  "theme_color": "#031326",
+  "icons": []
+}
