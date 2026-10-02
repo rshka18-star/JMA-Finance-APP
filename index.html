@@ -1,12 +1,302 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#031326"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="JMA Finance"><title>JMA Finance</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./style.css"></head><body>
-<div id="pinScreen" class="pin-screen"><div class="pin-card"><img src="./jma-header.jpg" class="pin-logo"><div class="lock">🔒</div><h1 id="pinTitle">Create 4-digit PIN</h1><p id="pinHint">Enter a 4-digit PIN</p><div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div><div class="keypad" id="keypad"></div><button id="pinBack" class="small-link">Clear</button><p id="pinError" class="pin-error"></p></div></div>
-<div id="app" class="app hidden"><header class="hero"><button class="icon-btn" id="menuBtn">☰</button><img src="./jma-header.jpg" class="hero-logo"><button class="icon-btn" id="profileBtn">👤</button></header><main class="content">
-<section class="action-grid"><button class="money-card income-card" id="addIncome"><h2>Income</h2><div class="round-btn plus">+</div><div class="big-money" id="incomeTotal">€0</div><p>Tap to add</p></button><button class="money-card expense-card" id="addExpense"><h2>Expenses</h2><div class="round-btn minus">−</div><div class="big-money" id="expenseTotal">€0</div><p>Tap to add</p></button></section>
-<section class="balance-card"><div class="wallet">👛</div><div><h3>Current Balance</h3><div class="balance-value" id="balanceTotal">€0</div></div><button id="toggleBalance" class="eye-btn">👁</button></section>
-<section class="period-tabs"><button class="period active" data-period="day">Day</button><button class="period" data-period="week">Week</button><button class="period" data-period="month">Month</button></section>
-<section class="summary-card"><h3>📅 <span id="summaryTitle">Today Summary</span></h3><div class="summary-row green"><span>⬆ Income</span><strong id="summaryIncome">€0</strong></div><div class="summary-row red"><span>⬇ Expenses</span><strong id="summaryExpense">€0</strong></div><div class="summary-row white"><span>📊 Balance</span><strong id="summaryBalance">€0</strong></div></section>
-<section class="mini-grid"><div class="summary-card mini"><h3>📅 This Week</h3><div class="summary-row green"><span>⬆ Income</span><strong id="weekIncome">€0</strong></div><div class="summary-row red"><span>⬇ Expenses</span><strong id="weekExpense">€0</strong></div><div class="summary-row white"><span>📊 Balance</span><strong id="weekBalance">€0</strong></div></div><div class="summary-card mini"><h3>📅 This Month</h3><div class="summary-row green"><span>⬆ Income</span><strong id="monthIncome">€0</strong></div><div class="summary-row red"><span>⬇ Expenses</span><strong id="monthExpense">€0</strong></div><div class="summary-row white"><span>📊 Balance</span><strong id="monthBalance">€0</strong></div></div></section>
-<section id="historyView" class="view-section hidden-view"><div class="view-header"><h2>History</h2><button id="closeHistory">✕</button></div><div id="historyList"></div></section>
-<section id="settingsView" class="view-section hidden-view"><div class="view-header"><h2>Settings</h2><button id="closeSettings">✕</button></div><button class="settings-row" id="changePin">🔒 Change PIN</button><button class="settings-row" id="exportData">⬇ Export Data</button><button class="settings-row danger" id="resetData">🗑 Reset Finance Data</button></section>
-</main><nav class="bottom-nav"><button class="nav-item active" data-nav="home"><span>🏠</span>Home</button><button class="nav-item" data-nav="history"><span>🕘</span>History</button><button class="nav-item" data-nav="settings"><span>⚙️</span>Settings</button></nav></div>
-<div id="modal" class="modal hidden"><div class="modal-card"><button class="modal-close" id="modalClose">✕</button><h2 id="modalTitle">Add Income</h2><label>Amount (€)</label><input id="amountInput" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"><label>Category</label><input id="categoryInput" type="text" placeholder="e.g. Salary, Fuel"><label>Note (optional)</label><input id="noteInput" type="text" placeholder="Optional note"><button id="saveTransaction" class="save-btn">Save</button></div></div><script src="./app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#031326">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JMA Finance">
+
+  <title>JMA Finance</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<!-- LOGIN / CREATE ACCOUNT -->
+<div id="authScreen" class="pin-screen">
+  <div class="pin-card">
+    <img src="./jma-header.jpg" class="pin-logo">
+
+    <div class="lock">🔐</div>
+
+    <h1 id="authTitle">JMA Finance</h1>
+    <p id="authHint">Sign in to access your finance data</p>
+
+    <input
+      id="emailInput"
+      type="email"
+      placeholder="Email address"
+      autocomplete="email"
+    >
+
+    <input
+      id="passwordInput"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button id="loginBtn" class="save-btn">
+      Login
+    </button>
+
+    <button id="createAccountBtn" class="small-link">
+      Create Account
+    </button>
+
+    <p id="authError" class="pin-error"></p>
+  </div>
+</div>
+
+
+<!-- MAIN APP -->
+<div id="app" class="app hidden">
+
+  <header class="hero">
+    <button class="icon-btn" id="menuBtn">☰</button>
+
+    <img src="./jma-header.jpg" class="hero-logo">
+
+    <button class="icon-btn" id="profileBtn">👤</button>
+  </header>
+
+  <main class="content">
+
+    <section class="action-grid">
+
+      <button class="money-card income-card" id="addIncome">
+        <h2>Income</h2>
+        <div class="round-btn plus">+</div>
+        <div class="big-money" id="incomeTotal">€0</div>
+        <p>Tap to add</p>
+      </button>
+
+      <button class="money-card expense-card" id="addExpense">
+        <h2>Expenses</h2>
+        <div class="round-btn minus">−</div>
+        <div class="big-money" id="expenseTotal">€0</div>
+        <p>Tap to add</p>
+      </button>
+
+    </section>
+
+
+    <section class="balance-card">
+      <div class="wallet">👛</div>
+
+      <div>
+        <h3>Current Balance</h3>
+        <div class="balance-value" id="balanceTotal">€0</div>
+      </div>
+
+      <button id="toggleBalance" class="eye-btn">👁️</button>
+    </section>
+
+
+    <section class="period-tabs">
+      <button class="period active" data-period="day">Day</button>
+      <button class="period" data-period="week">Week</button>
+      <button class="period" data-period="month">Month</button>
+    </section>
+
+
+    <section class="summary-card">
+
+      <h3>📅 <span id="summaryTitle">Today Summary</span></h3>
+
+      <div class="summary-row green">
+        <span>⬆️ Income</span>
+        <strong id="summaryIncome">€0</strong>
+      </div>
+
+      <div class="summary-row red">
+        <span>⬇️ Expenses</span>
+        <strong id="summaryExpense">€0</strong>
+      </div>
+
+      <div class="summary-row white">
+        <span>📊 Balance</span>
+        <strong id="summaryBalance">€0</strong>
+      </div>
+
+    </section>
+
+
+    <section class="mini-grid">
+
+      <div class="summary-card mini">
+
+        <h3>📅 This Week</h3>
+
+        <div class="summary-row green">
+          <span>⬆️ Income</span>
+          <strong id="weekIncome">€0</strong>
+        </div>
+
+        <div class="summary-row red">
+          <span>⬇️ Expenses</span>
+          <strong id="weekExpense">€0</strong>
+        </div>
+
+        <div class="summary-row white">
+          <span>📊 Balance</span>
+          <strong id="weekBalance">€0</strong>
+        </div>
+
+      </div>
+
+
+      <div class="summary-card mini">
+
+        <h3>📅 This Month</h3>
+
+        <div class="summary-row green">
+          <span>⬆️ Income</span>
+          <strong id="monthIncome">€0</strong>
+        </div>
+
+        <div class="summary-row red">
+          <span>⬇️ Expenses</span>
+          <strong id="monthExpense">€0</strong>
+        </div>
+
+        <div class="summary-row white">
+          <span>📊 Balance</span>
+          <strong id="monthBalance">€0</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section id="historyView" class="view-section hidden-view">
+
+      <div class="view-header">
+        <h2>History</h2>
+        <button id="closeHistory">✕</button>
+      </div>
+
+      <div id="historyList"></div>
+
+    </section>
+
+
+    <section id="settingsView" class="view-section hidden-view">
+
+      <div class="view-header">
+        <h2>Settings</h2>
+        <button id="closeSettings">✕</button>
+      </div>
+
+      <button class="settings-row" id="exportData">
+        ⬇️ Export Data
+      </button>
+
+      <button class="settings-row" id="logoutBtn">
+        🚪 Logout
+      </button>
+
+      <button class="settings-row danger" id="resetData">
+        🗑️ Reset Finance Data
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <nav class="bottom-nav">
+
+    <button class="nav-item active" data-nav="home">
+      <span>🏠</span>
+      Home
+    </button>
+
+    <button class="nav-item" data-nav="history">
+      <span>🕘</span>
+      History
+    </button>
+
+    <button class="nav-item" data-nav="settings">
+      <span>⚙️</span>
+      Settings
+    </button>
+
+  </nav>
+
+</div>
+
+
+<!-- ADD TRANSACTION MODAL -->
+<div id="modal" class="modal hidden">
+
+  <div class="modal-card">
+
+    <button class="modal-close" id="modalClose">✕</button>
+
+    <h2 id="modalTitle">Add Income</h2>
+
+    <label>Amount (€)</label>
+
+    <input
+      id="amountInput"
+      type="number"
+      inputmode="decimal"
+      min="0"
+      step="0.01"
+      placeholder="0.00"
+    >
+
+    <label>Category</label>
+
+    <input
+      id="categoryInput"
+      type="text"
+      placeholder="e.g. Salary, Fuel"
+    >
+
+    <label>Note (optional)</label>
+
+    <input
+      id="noteInput"
+      type="text"
+      placeholder="Optional note"
+    >
+
+    <button id="saveTransaction" class="save-btn">
+      Save
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCGoUKwrMA8AKlov0w4OokHhr_e9KQgZhk",
+  authDomain: "jma-finance-app.firebaseapp.com",
+  projectId: "jma-finance-app",
+  storageBucket: "jma-finance-app.firebasestorage.app",
+  messagingSenderId: "148843122425",
+  appId: "1:148843122425:web:b7a535edcc45bb0fa89c28",
+  measurementId: "G-XZ9CXN3E1M"
+};
+
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="./app.js"></script>
+
+</body>
+</html>
